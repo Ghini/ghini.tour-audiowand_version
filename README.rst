@@ -6,16 +6,17 @@ Garden audio guide and geographic tour.
 Idea
 --------------------
 
-A ghini.tour offers visitors something functionally similar to the audio
-guides offered at the entrance of most modern musea.
+The ghini.tour app offers visitors something functionally similar to the
+audio guides offered at the entrance of most modern musea.
 
-There is only one ghini.tour; each guide is just a configuration, you
-download it from the ghini.tour configuration page, use it during your
-visit, you can remove it after you leave the garden.
+The guide offers a detailed map of the garden on which a visitor can see
+their precise position, and spoken text associated to spots in the garden,
+and that's about it.
 
-The guides offer spoken text associated to spots in the garden, a detailed
-map of the garden on which you can see your precise position if your phone
-has a GPS sensor, and that's about it.
+There is only one ghini.tour; each guide is just a ghini.tour configuration:
+visitors download a configuration from the ghini.tour configuration menu,
+use it during their visit, and may choose to remove it after they leave the
+garden.
 
 configuring and installing
 -------------------------------
@@ -30,16 +31,16 @@ to:
   own text description, in as many languages as you think appropriate,
 * apart from the openstreetmap edits, send the data to me, so I can include
   it in our data repository.
+* some financial support would be welcome: hosting your data costs me money.
   
 Garden visitors only need to:
 
-* install ghini.tour from google play,
+* install the free and ads-free ghini.tour from google play,
 * start ghini.tour,
 * select and download the garden among the available tours,
 
-Although all through the documentation we talk about gardens and botany, the
-guides you can produce with ghini.tour are not at all limited to botanic
-gardens.
+Although we talk about gardens and botany, the guides you can use with
+ghini.tour are not at all limited to botanic gardens.
 
 keeping track of tours
 ----------------------------
@@ -48,5 +49,5 @@ we haven't decided yet, but I wish to
 
 * have tour texts on weblate, with one configuration marked as the "source"
   and then translations to whatever other languages we desire,
-* let ghini.tour download texts and audio from ghini.me,
+* let ghini.tour download POIs, texts and audio from ghini.me,
 * ghini.me would be producing the audio files automatically,
