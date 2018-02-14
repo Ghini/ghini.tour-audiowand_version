@@ -6,7 +6,6 @@
 app/.gitignore
 app/build.gradle
 app/proguard-rules.pro
-app/src/
 build.gradle
 build/
 gradle.properties
@@ -17,6 +16,5 @@ local.properties
 osmdroid-android/
 settings.gradle
 *~
-README.md
 cordova-projects/*
 audiowand
