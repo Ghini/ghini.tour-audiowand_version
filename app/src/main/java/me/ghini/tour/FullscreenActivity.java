@@ -9,12 +9,17 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.TextView;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.DelayedMapListener;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -35,6 +40,7 @@ import java.util.List;
  */
 public class FullscreenActivity extends AppCompatActivity {
     MapView map = null;
+    ItemizedOverlayWithFocus<OverlayItem> POIOverlay;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,19 @@ public class FullscreenActivity extends AppCompatActivity {
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
         map.setTileSource(TileSourceFactory.MAPNIK);
+
+        map.setMapListener(new DelayedMapListener(new MapListener() {
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                return false;
+            }
+
+            @Override
+            public boolean onZoom(final ZoomEvent e) {
+                POIOverlay.setEnabled(e.getZoomLevel() > 16);
+                return true;
+            }
+        }, 250 ));
 
         // my location position - it's an overlay
         MyLocationNewOverlay locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
@@ -64,7 +83,7 @@ public class FullscreenActivity extends AppCompatActivity {
         List<OverlayItem> items = db.getPOIs();
 
         // the POI overlay
-        ItemizedOverlayWithFocus<OverlayItem> POIOverlay = new ItemizedOverlayWithFocus<OverlayItem>(context, items,
+        POIOverlay = new ItemizedOverlayWithFocus<OverlayItem>(context, items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
@@ -81,6 +100,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 });
         POIOverlay.setFocusItemsOnTap(false);
         map.getOverlays().add(POIOverlay);
+        POIOverlay.setEnabled(false);
 
         /* the initial centre point */
         IMapController mapController = map.getController();
@@ -98,6 +118,12 @@ public class FullscreenActivity extends AppCompatActivity {
         map.getOverlays().add(scaleBarOverlay);
 
         map.getOverlays().add(new CopyrightOverlay(context));
+    }
+
+    public void onPlayPause(View view) {
+    }
+
+    public void onPlayStop(View view) {
     }
 
     public void onResume(){
