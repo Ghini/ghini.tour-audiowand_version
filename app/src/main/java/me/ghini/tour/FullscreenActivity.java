@@ -5,11 +5,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -31,8 +35,10 @@ import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -40,6 +46,7 @@ import java.util.List;
  */
 public class FullscreenActivity extends AppCompatActivity {
     MapView map = null;
+    MediaPlayer mediaPlayer = null;
     ItemizedOverlayWithFocus<OverlayItem> POIOverlay;
 
     @Override
@@ -85,27 +92,37 @@ public class FullscreenActivity extends AppCompatActivity {
         // the POI overlay
         POIOverlay = new ItemizedOverlayWithFocus<OverlayItem>(context, items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                    @Override
-                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        //do something
-                        TextView text = findViewById(R.id.text);
-                        text.setText(item.getTitle());
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        return false;
-                    }
-                });
+            private void playback(final int index, final OverlayItem item, boolean start){
+                TextView text = findViewById(R.id.text);
+                text.setText(item.getTitle());
+                try {
+                    int resID=getResources().getIdentifier(String.format(Locale.ENGLISH, "a%04d", index), "raw", getPackageName());
+                    startPlayback(resID, start);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                playback(index, item, false);
+                return false;
+            }
+            @Override
+            public boolean onItemLongPress(final int index, final OverlayItem item) {
+                playback(index, item, true);
+                return false;
+            }
+        });
         POIOverlay.setFocusItemsOnTap(false);
         map.getOverlays().add(POIOverlay);
         POIOverlay.setEnabled(false);
 
         /* the initial centre point */
         IMapController mapController = map.getController();
-        mapController.setZoom(5);
-        GeoPoint startPoint = new GeoPoint(5.5, -74.5);
+//        GeoPoint startPoint = new GeoPoint(5.5, -74.5);
+//        mapController.setZoom(5);
+        mapController.setZoom(16);
+        GeoPoint startPoint = new GeoPoint(7.5925, -80.9625);
         mapController.setCenter(startPoint);
 
         /* the scale bar */
@@ -120,10 +137,39 @@ public class FullscreenActivity extends AppCompatActivity {
         map.getOverlays().add(new CopyrightOverlay(context));
     }
 
+    void startPlayback(int resID, boolean start){
+        if (mediaPlayer != null)
+            mediaPlayer.release();
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), resID);
+        ImageButton button = findViewById(R.id.playPauseButton);
+        if (start) {
+            mediaPlayer.start();
+            button.setImageResource(R.drawable.ic_media_pause);
+        } else {
+            button.setImageResource(R.drawable.ic_media_play);
+        }
+    }
+
     public void onPlayPause(View view) {
+        if (mediaPlayer != null) {
+            ImageButton button = (ImageButton)view;
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                button.setImageResource(R.drawable.ic_media_play);
+            } else {
+                mediaPlayer.start();
+                button.setImageResource(R.drawable.ic_media_pause);
+            }
+        }
     }
 
     public void onPlayStop(View view) {
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+            mediaPlayer.seekTo(0);
+            ImageButton button = findViewById(R.id.playPauseButton);
+            button.setImageResource(R.drawable.ic_media_play);
+        }
     }
 
     public void onResume(){

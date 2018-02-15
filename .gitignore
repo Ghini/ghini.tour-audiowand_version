@@ -18,3 +18,4 @@ settings.gradle
 *~
 cordova-projects/*
 audiowand
+app/src/main/res/raw/
